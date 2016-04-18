@@ -1,27 +1,7 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    20:37:07 04/09/2016 
--- Design Name: 
--- Module Name:    memoriaInstrucciones - arqMI 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use std.textio.all;
-
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -31,18 +11,16 @@ use std.textio.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity memoriaInstrucciones is
+entity instructionMemory is
     Port ( clk : in  STD_LOGIC;
-           address : in  STD_LOGIC_VECTOR (31 downto 0);
+           MIentrada : in  STD_LOGIC_VECTOR (31 downto 0);
            reset : in  STD_LOGIC;
-           outInstruction : out  STD_LOGIC_VECTOR (31 downto 0));
-end memoriaInstrucciones;
+           MIsalida : out  STD_LOGIC_VECTOR (31 downto 0));
+end instructionMemory;
 
-architecture arqMI of memoriaInstrucciones is
+architecture arqProcesador of instructionMemory is
 
-
-
-	type rom_type is array (0 to 31) of std_logic_vector (31 downto 0);
+type rom_type is array (0 to 31) of std_logic_vector (31 downto 0);
 		
 	impure function InitRomFromFile (RomFileName : in string) return rom_type is
 		FILE RomFile : text open read_mode is RomFileName;
@@ -58,22 +36,20 @@ architecture arqMI of memoriaInstrucciones is
 		return temp_mem;
 	end function;
 	
-	signal instructions : rom_type := InitRomFromFile("program2.data");
-
+	signal instructions : rom_type := InitRomFromFile("pruebaFinal.data");
+	
 begin
-
-
-        process(reset,address, instructions)--clk)
+--reset,address, instructions)
+	process(reset,MIentrada, instructions)--clk)
 	begin
-		if(rising_edge(clk))then
+		--if(rising_edge(clk))then
 			if(reset = '1')then
-				outInstruction <= (others=>'0');
+				MIsalida <= (others=>'0');
 			else
-				outInstruction <= instructions(conv_integer(address(5 downto 0)));
+				MIsalida <= instructions(conv_integer(MIentrada(5 downto 0)));
 			end if;
-		end if;
+		--end if;
 	end process;
 
 
-end arqMI;
-
+end arqProcesador;
