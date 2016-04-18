@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    10:22:15 04/17/2016 
+-- Create Date:    20:17:40 04/17/2016 
 -- Design Name: 
--- Module Name:    ALU - arqAlu 
+-- Module Name:    ALU - arqProcesador 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -33,15 +33,15 @@ entity ALU is
     Port ( operando1 : in  STD_LOGIC_VECTOR (31 downto 0);
            operando2 : in  STD_LOGIC_VECTOR (31 downto 0);
            aluOP : in  STD_LOGIC_VECTOR (5 downto 0);
-           carry : in  STD_LOGIC;
+          -- carry : in  STD_LOGIC;
            AluResult : out  STD_LOGIC_VECTOR (31 downto 0));
 end ALU;
 
-architecture arqAlu of ALU is
+architecture arqProcesador of ALU is
 
 begin
 
-process(operando1,operando2,aluOP,carry)
+  process(operando1,operando2,aluOP)--,carry)
 	begin
 	   case (aluOP) is 
 			when "000000" => -- add
@@ -49,7 +49,7 @@ process(operando1,operando2,aluOP,carry)
 			when "000001" => -- addcc
 				AluResult <= operando1 + operando2;
 			when "000010" => --addx
-				AluResult <= operando1 + operando2 + carry;
+				AluResult <= operando1 + operando2; --+ carry;
 			when "000100" => --and
 				AluResult <= operando1 and operando2;
 			when "001000" => -- or
@@ -62,6 +62,5 @@ process(operando1,operando2,aluOP,carry)
 				AluResult <= (others=>'0');
 		end case;
 	end process;
-
-end arqAlu;
+end arqProcesador;
 
