@@ -5,85 +5,67 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY tbunidadControl IS
-END tbunidadControl;
+ENTITY tbUC IS
+END tbUC;
  
-ARCHITECTURE behavior OF tbunidadControl IS 
+ARCHITECTURE behavior OF tbUC IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
-    COMPONENT unidadControl
+    COMPONENT UC
     PORT(
-         clk : IN  std_logic;
          op : IN  std_logic_vector(1 downto 0);
-         op2 : IN  std_logic_vector(2 downto 0);
          op3 : IN  std_logic_vector(5 downto 0);
-         cond : IN  std_logic_vector(3 downto 0);
-         icc : IN  std_logic_vector(3 downto 0);
-         ALUOP : OUT  std_logic_vector(5 downto 0)
+         salida : OUT  std_logic_vector(5 downto 0)
         );
     END COMPONENT;
     
 
    --Inputs
-   signal clk : std_logic := '0';
    signal op : std_logic_vector(1 downto 0) := (others => '0');
-   signal op2 : std_logic_vector(2 downto 0) := (others => '0');
    signal op3 : std_logic_vector(5 downto 0) := (others => '0');
-   signal cond : std_logic_vector(3 downto 0) := (others => '0');
-   signal icc : std_logic_vector(3 downto 0) := (others => '0');
 
  	--Outputs
-   signal ALUOP : std_logic_vector(5 downto 0);
-
-   -- Clock period definitions
-   constant clk_period : time := 10 ns;
+   signal salida : std_logic_vector(5 downto 0);
+   -- No clocks detected in port list. Replace <clock> below with 
+   -- appropriate port name 
+ 
+   --constant <clock>_period : time := 10 ns;
  
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
-   uut: unidadControl PORT MAP (
-          clk => clk,
+   uut: UC PORT MAP (
           op => op,
-          op2 => op2,
           op3 => op3,
-          cond => cond,
-          icc => icc,
-          ALUOP => ALUOP
+          salida => salida
         );
 
    -- Clock process definitions
-   clk_process :process
-   begin
-		clk <= '0';
-		wait for clk_period/2;
-		clk <= '1';
-		wait for clk_period/2;
-   end process;
+   --<clock>_process :process
+   --begin
+		--<clock> <= '0';
+		--wait for <clock>_period/2;
+		--<clock> <= '1';
+		--wait for <clock>_period/2;
+   --end process;
  
 
    -- Stimulus process
    stim_proc: process
    begin		
-     
-op <= "10";
-		op2 <= "000";
-		op3 <= "000000" ;
-		cond <= "0000";
-		icc <= "0000";		
-      wait for 100 ns;
-		op <= "10";
-		op2 <= "000";
-		op3 <= "010000" ;
-		cond <= "0000";
-		icc <= "0000";		
-      wait for 100 ns;
-		op <= "00";
-		op2 <= "010";
-		op3 <= "000000" ;
-		cond <= "1000";
-		icc <= "0000";		
-      wait;	  
+      -- hold reset state for 100 ns.
+      wait for 100 ns;	
+
+      op <= "10";
+		op3 <= "000111";
+		 wait for 100 ns;
+		 
+		 op <= "10";
+		op3 <= "000100";
+		 wait for 100 ns;
+		 
+		 
 
       wait;
    end process;
