@@ -12,9 +12,9 @@ use std.textio.all;
 --use UNISIM.VComponents.all;
 
 entity instructionMemory is
-    Port ( clk : in  STD_LOGIC;
+    Port ( reset : in STD_LOGIC;
            MIentrada : in  STD_LOGIC_VECTOR (31 downto 0);
-           reset : in  STD_LOGIC;
+           
            MIsalida : out  STD_LOGIC_VECTOR (31 downto 0));
 end instructionMemory;
 
@@ -39,17 +39,18 @@ type rom_type is array (0 to 31) of std_logic_vector (31 downto 0);
 	signal instructions : rom_type := InitRomFromFile("pruebaFinal.data");
 	
 begin
---reset,address, instructions)
-	process(reset,MIentrada, instructions)--clk)
+
+	process(reset, MIentrada, instructions)
 	begin
-		--if(rising_edge(clk))then
+		
 			if(reset = '1')then
 				MIsalida <= (others=>'0');
 			else
-				MIsalida <= instructions(conv_integer(MIentrada(5 downto 0)));
+				MIsalida <= instructions(conv_integer(MIentrada(4 downto 0)));
 			end if;
-		--end if;
+		
 	end process;
 
 
 end arqProcesador;
+
