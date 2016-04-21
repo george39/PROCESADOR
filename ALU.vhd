@@ -35,7 +35,6 @@ begin
 			when "000000" => -- add
 				AluResult <= operando1 + operando2;
 			
-			
 			when "001000" => -- or
 				AluResult <= operando1 or operando2;
 			
