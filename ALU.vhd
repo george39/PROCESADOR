@@ -38,7 +38,8 @@ begin
 			
 			when "001000" => -- or
 				AluResult <= operando1 or operando2;
-			when "000110" => -- orn
+			
+                        when "000110" => -- orn
 				AluResult <= operando1 nor operando2;
 			
 			when "000100" => -- sub
