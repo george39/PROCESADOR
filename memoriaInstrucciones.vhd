@@ -1,7 +1,9 @@
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use std.textio.all;
+
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -11,14 +13,13 @@ use std.textio.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity instructionMemory is
-    Port ( reset : in STD_LOGIC;
-           MIentrada : in  STD_LOGIC_VECTOR (31 downto 0);
-           
+entity MEMORIAINSTRUCCION is
+    Port ( MIentrada : in  STD_LOGIC_VECTOR (31 downto 0);
+           reset : in  STD_LOGIC;
            MIsalida : out  STD_LOGIC_VECTOR (31 downto 0));
-end instructionMemory;
+end MEMORIAINSTRUCCION;
 
-architecture arqProcesador of instructionMemory is
+architecture ArqProcesador of MEMORIAINSTRUCCION is
 
 type rom_type is array (0 to 31) of std_logic_vector (31 downto 0);
 		
@@ -36,14 +37,13 @@ type rom_type is array (0 to 31) of std_logic_vector (31 downto 0);
 		return temp_mem;
 	end function;
 	
-	signal instructions : rom_type := InitRomFromFile("pruebaFinal.data");
-	
-begin
+	signal instructions : rom_type := InitRomFromFile("program2.data");
 
-	process(reset, MIentrada, instructions)
+begin
+   process(reset,MIentrada, instructions)
 	begin
-		
-			if(reset = '1')then
+	
+	      if(reset = '1')then
 				MIsalida <= (others=>'0');
 			else
 				MIsalida <= instructions(conv_integer(MIentrada(4 downto 0)));
@@ -51,6 +51,5 @@ begin
 		
 	end process;
 
-
-end arqProcesador;
+end ArqProcesador;
 
