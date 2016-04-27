@@ -1,22 +1,3 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    17:46:22 04/24/2016 
--- Design Name: 
--- Module Name:    procesadorSparckV8 - arqProcesador 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
@@ -29,16 +10,15 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity procesadorSparckV8 is
+entity PROCESADOR is
     Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
-           salida_alu : out  STD_LOGIC_VECTOR (31 downto 0));
-end procesadorSparckV8;
+           salida_procesador : out  STD_LOGIC_VECTOR (31 downto 0));
+end PROCESADOR;
 
-architecture arqProcesador of procesadorSparckV8 is
+architecture ArqProcesador of PROCESADOR is
 
-component PC 
-
+component PC
     Port ( PC_entrada : in  STD_LOGIC_VECTOR (31 downto 0);
            reset : in  STD_LOGIC;
            clk : in  STD_LOGIC;
@@ -46,35 +26,32 @@ component PC
 end component;
 
 
-component UC is
-    Port ( op : in  STD_LOGIC_VECTOR (1 downto 0);
-           op3 : in  STD_LOGIC_VECTOR (5 downto 0);
-           alu_op : out  STD_LOGIC_VECTOR (5 downto 0));
-end component;
-
-
-component ALU 
-    Port ( operando1 : in  STD_LOGIC_VECTOR (31 downto 0);
-           operando2 : in  STD_LOGIC_VECTOR (31 downto 0);
-           alu_op : in  STD_LOGIC_VECTOR (5 downto 0);
-           salida_alu : out  STD_LOGIC_VECTOR (31 downto 0));
-end component;
-
-
-component MEMORIAINSTRUCCION 
+component MEMORIAINSTRUCCION
     Port ( MIentrada : in  STD_LOGIC_VECTOR (31 downto 0);
            reset : in  STD_LOGIC;
            MIsalida : out  STD_LOGIC_VECTOR (31 downto 0));
 end component;
 
-component MULTIPLEXOR is
+component MULTIPLEXOR
     Port ( crs2 : in  STD_LOGIC_VECTOR (31 downto 0);
            inmediato : in  STD_LOGIC_VECTOR (31 downto 0);
            i : in  STD_LOGIC;
            salida_mux : out  STD_LOGIC_VECTOR (31 downto 0));
 end component;
 
-component RF is
+component SUMADOR
+    Port ( operando1 : in  STD_LOGIC_VECTOR (31 downto 0);
+           operando2 : in  STD_LOGIC_VECTOR (31 downto 0);
+           salidaSumador : out  STD_LOGIC_VECTOR (31 downto 0));
+end component;
+
+component UC
+    Port ( op : in  STD_LOGIC_VECTOR (1 downto 0);
+           op3 : in  STD_LOGIC_VECTOR (5 downto 0);
+           alu_op : out  STD_LOGIC_VECTOR (5 downto 0));
+end component;
+
+component RF
     Port ( reset : in  STD_LOGIC;
            rs1 : in  STD_LOGIC_VECTOR (4 downto 0);
            rs2 : in  STD_LOGIC_VECTOR (4 downto 0);
@@ -84,86 +61,100 @@ component RF is
            crs2 : out  STD_LOGIC_VECTOR (31 downto 0));
 end component;
 
-component SEU is
+component SEU
     Port ( entrada_seu : in  STD_LOGIC_VECTOR (12 downto 0);
            salida_seu : out  STD_LOGIC_VECTOR (31 downto 0));
 end component;
 
-component SUMADOR is
+component ALU is
     Port ( operando1 : in  STD_LOGIC_VECTOR (31 downto 0);
            operando2 : in  STD_LOGIC_VECTOR (31 downto 0);
-           salidaSumador : out  STD_LOGIC_VECTOR (31 downto 0));
+           alu_op : in  STD_LOGIC_VECTOR (5 downto 0);
+           salida_alu : out  STD_LOGIC_VECTOR (31 downto 0));
 end component;
 
-signal ALU_RF : std_logic_vector(31 downto 0);
-signal nPC_PC : std_logic_vector(31 downto 0);
-signal PC_IM : std_logic_vector(31 downto 0);
-signal RF_multiplexor : std_logic_vector(31 downto 0);
-signal RF_ALU : std_logic_vector(31 downto 0);
-signal nPC_sumador  : std_logic_vector(31 downto 0);
-signal sumador_nPC : std_logic_vector(31 downto 0);
-signal IMmultiple : std_logic_vector(31 downto 0);
-signal UC_ALU : std_logic_vector(5 downto 0);
-signal SEU_multiplexor : std_logic_vector(31 downto 0);
-signal multiplexor_ALU : std_logic_vector(31 downto 0);
+signal nPC_PC : std_logic_vector (31 downto 0):= (others => '0');
+signal nPC_SUMADOR : std_logic_vector (31 downto 0):= (others => '0');
+signal SUMADOR_nPC : std_logic_vector (31 downto 0):= (others => '0');
+
+signal PC_MEMORIAINSTRUCCION : std_logic_vector (31 downto 0):= (others => '0');
+signal MEMORIAINSTRUCCION_MULTIPLE : std_logic_vector (31 downto 0):= (others => '0');
+
+signal UC_ALU : std_logic_vector (5 downto 0):= (others => '0');
+
+signal RF_ALU : std_logic_vector (31 downto 0):= (others => '0');
+signal RF_MULTIPLEXOR : std_logic_vector (31 downto 0):= (others => '0');
+signal ALU_RF : std_logic_vector (31 downto 0):= (others => '0');
+
+signal SEU_MULTIPLEXOR : std_logic_vector (31 downto 0):= (others => '0');
+signal MULTIPLEXOR_ALU : std_logic_vector (31 downto 0):= (others => '0');
 
 begin
 
-comp_nPC : PC PORT MAP(
-    PC_entrada => sumador_nPC,
-	 clk => clk,
-	 reset => reset,
-	 PC_salida => nPC_PC
-);
-
+comp_nPC: PC PORT MAP(
+		PC_entrada => SUMADOR_nPC,
+		reset =>reset,
+		clk => clk,
+		PC_salida => nPC_PC
+	);
+	
 comp_PC: PC PORT MAP(
-    PC_entrada => nPC_PC,
-	 clk => clk,
-	 reset => reset,
-	 PC_salida => PC_IM
-);
+		PC_entrada => nPC_PC,
+		reset => reset,
+		clk => clk,
+		PC_salida => PC_MEMORIAINSTRUCCION
+	);
+	
+comp_SUMADOR: SUMADOR PORT MAP(
+		operando1 => X"00000001",
+		operando2 => nPC_SUMADOR,
+		salidaSumador => SUMADOR_nPC
+	);
+	
+comp_MEMORIAINSTRUCCION : MEMORIAINSTRUCCION PORT MAP (
+      MIentrada => PC_MEMORIAINSTRUCCION,
+		reset => reset,
+		MIsalida => MEMORIAINSTRUCCION_MULTIPLE (31 downto 0)
+   );
+	
+	
+comp_UC : UC PORT MAP (
+      op => MEMORIAINSTRUCCION_MULTIPLE (31 downto 30),
+		op3 => MEMORIAINSTRUCCION_MULTIPLE (24 downto 19),
+		alu_op => UC_ALU
+   );
+	
+comp_RF : RF PORT MAP (
+      reset => reset,
+      rs1 => MEMORIAINSTRUCCION_MULTIPLE (18 downto 14),
+      rs2 => MEMORIAINSTRUCCION_MULTIPLE (4 downto 0),
+      rd => MEMORIAINSTRUCCION_MULTIPLE (29 downto 25),
+      salida_alu => ALU_RF,
+      crs1 => RF_ALU,
+      crs2 => RF_MULTIPLEXOR
+	);
 
-comp_sumador : SUMADOR PORT MAP(
-     operando1 => X"00000001",
-	  operando2 =>  nPC_PC,
-	  salidaSumador => sumador_nPC
-	  );
-	  
-comp_IM : MEMORIAINSTRUCCION port map(
-     MIentrada => PC_IM,
-     reset => reset,
-     MIsalida => IMmultiple
-	  );
+comp_MULTIPLEXOR : MULTIPLEXOR PORT MAP (
+      crs2 => RF_MULTIPLEXOR,
+      inmediato => SEU_MULTIPLEXOR,
+      i => MEMORIAINSTRUCCION_MULTIPLE (13),
+      salida_mux => MULTIPLEXOR_ALU
+	);
+	
+comp_SEU : SEU PORT MAP (
+      entrada_seu => MEMORIAINSTRUCCION_MULTIPLE (12 downto 0),
+      salida_seu => SEU_MULTIPLEXOR
+	);
 
-comp_UC : UC PORT MAP(
-     op =>	IMmultiple(31 downto 30),
-     op3 => IMmultiple(24 downto 19),
-     alu_op => UC_ALU 
-  );	
+comp_ALU : ALU PORT MAP (
+      operando1 => RF_ALU,
+      operando2 => MULTIPLEXOR_ALU,
+      alu_op => UC_ALU,
+      salida_alu => ALU_RF
+	);
 
-comp_RF : RF PORT MAP(
-     reset => reset,
-	  rs1 => IMmultiple(18 downto 14),
-	  rs2 => IMmultiple(4 downto 0),
-	  rd => IMmultiple(29 downto 25),
-	  crs1 => RF_ALU,
-	  crs2 => RF_multiplexor,
-	  salida_alu => ALU_RF
-	  
-	);	
-comp_SEU : SEU PORT MAP(
-     entrada_seu => IMmultiple(12 downto 0),
-     salida_seu => SEU_multiplexor
-  	);
 
-comp_multiplexor : multiplexor PORT MAP(
-     crs2 => RF_multiplexor,
-	  inmediato => SEU_multiplexor,
-	  i => IMmultiple(13),
-	  salida_mux => multiplexor_ALU
-	  
-	);  
-	  
-  
-end arqProcesador;
+salida_procesador <= ALU_RF;
+
+end ArqProcesador;
 
