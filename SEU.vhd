@@ -1,22 +1,3 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    11:06:31 04/17/2016 
--- Design Name: 
--- Module Name:    SEU - arqSeu 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
@@ -30,23 +11,25 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity SEU is
-    Port ( SIMM22 : in  STD_LOGIC_VECTOR (21 downto 0);
-           SEUout : out  STD_LOGIC_VECTOR (31 downto 0));
+    Port ( entrada_seu : in  STD_LOGIC_VECTOR (12 downto 0);
+           salida_seu : out  STD_LOGIC_VECTOR (31 downto 0));
 end SEU;
 
-architecture arqSeu of SEU is
+architecture ArqProcesador of SEU is
 
 begin
 
-process(SIMM22)
-begin
+  process(entrada_seu)
+	begin
+		if(entrada_seu(12) = '1')then
+			salida_seu(12 downto 0) <= entrada_seu;
+			salida_seu(31 downto 13) <= (others=>'1');
+		else
+			salida_seu(12 downto 0) <= entrada_seu;
+			salida_seu(31 downto 13) <= (others=>'0');
+		end if;
+	end process;
 
-if SIMM22(21) = '1' then
-  SEUout <= "1111111111" & SIMM22;
-  else
-  SEUout <= "0000000000" & SIMM22;
-  end if;
- end process;
 
-end arqSeu;
+end ArqProcesador;
 
