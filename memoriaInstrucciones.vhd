@@ -1,4 +1,3 @@
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
@@ -21,7 +20,7 @@ end MEMORIAINSTRUCCION;
 
 architecture ArqProcesador of MEMORIAINSTRUCCION is
 
-type rom_type is array (0 to 31) of std_logic_vector (31 downto 0);
+type rom_type is array (0 to 3) of std_logic_vector (31 downto 0);
 		
 	impure function InitRomFromFile (RomFileName : in string) return rom_type is
 		FILE RomFile : text open read_mode is RomFileName;
@@ -37,7 +36,7 @@ type rom_type is array (0 to 31) of std_logic_vector (31 downto 0);
 		return temp_mem;
 	end function;
 	
-	signal instructions : rom_type := InitRomFromFile("program2.data");
+	signal instructions : rom_type := InitRomFromFile("suma.data");
 
 begin
    process(reset,MIentrada, instructions)
